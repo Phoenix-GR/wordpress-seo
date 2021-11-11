@@ -133,7 +133,6 @@ class WPSEO_Admin_Gutenberg_Compatibility_Notification_Test extends TestCase {
 		$this->gutenberg_compatibility_mock->allows(
 			[
 				'is_installed'        => true,
-				'is_below_minimum'    => true,
 				'is_fully_compatible' => false,
 			]
 		);
