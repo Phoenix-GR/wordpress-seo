@@ -106,7 +106,51 @@ class WPSEO_Sitemap_Cache_Data implements Serializable, WPSEO_Sitemap_Cache_Data
 	/**
 	 * String representation of object.
 	 *
+	 * @link https://www.php.net/language.oop5.magic#object.serialize
+	 * @link https://wiki.php.net/rfc/custom_object_serialization
+	 *
+	 * @since 17.8.0
+	 *
+	 * @return array The data to be serialized.
+	 */
+	public function __serialize() {
+
+		$data = [
+			'status' => $this->status,
+			'xml'    => $this->sitemap,
+		];
+
+		return $data;
+	}
+
+	/**
+	 * Constructs the object.
+	 *
+	 * @link https://www.php.net/language.oop5.magic#object.serialize
+	 * @link https://wiki.php.net/rfc/custom_object_serialization
+	 *
+	 * @since 17.8.0
+	 *
+	 * @param array The unserialized data to use to (re)construct the object.
+	 *
+	 * @return void
+	 */
+	public function __unserialize( $data ) {
+
+		$this->set_sitemap( $data['xml'] );
+		$this->set_status( $data['status'] );
+	}
+
+	/**
+	 * String representation of object.
+	 *
 	 * @link http://php.net/manual/en/serializable.serialize.php
+	 * @link https://wiki.php.net/rfc/phase_out_serializable
+	 *
+	 * {@internal The Serializable interface is being phased out, in favour of the magic methods.
+	 * This method should be deprecated and removed and the class should no longer
+	 * implement the `Serializable` interface.
+	 * This change, however, can't be made until the minimum PHP version goes up to PHP 7.4 or higher.}
 	 *
 	 * @since 5.1.0
 	 *
@@ -114,29 +158,29 @@ class WPSEO_Sitemap_Cache_Data implements Serializable, WPSEO_Sitemap_Cache_Data
 	 */
 	public function serialize() {
 
-		$data = [
-			'status' => $this->status,
-			'xml'    => $this->sitemap,
-		];
-
-		return serialize( $data );
+		return serialize( $this->__serialize() );
 	}
 
 	/**
 	 * Constructs the object.
 	 *
 	 * @link http://php.net/manual/en/serializable.unserialize.php
+	 * @link https://wiki.php.net/rfc/phase_out_serializable
+	 *
+	 * {@internal The Serializable interface is being phased out, in favour of the magic methods.
+	 * This method should be deprecated and removed and the class should no longer
+	 * implement the `Serializable` interface.
+	 * This change, however, can't be made until the minimum PHP version goes up to PHP 7.4 or higher.}
 	 *
 	 * @since 5.1.0
 	 *
-	 * @param string $serialized The string representation of the object.
+	 * @param string $data The string representation of the object.
 	 *
 	 * @return void
 	 */
-	public function unserialize( $serialized ) {
+	public function unserialize( $data ) {
 
-		$data = unserialize( $serialized );
-		$this->set_sitemap( $data['xml'] );
-		$this->set_status( $data['status'] );
+		$data = unserialize( $data );
+		$this->__unserialize( $data );
 	}
 }
