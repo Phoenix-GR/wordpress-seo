@@ -6,6 +6,7 @@ import initAdminMedia from "./initializers/admin-media";
 import initClassicEditorIntegration from "./initializers/classic-editor-integration";
 import initTabs from "./initializers/metabox-tabs";
 import initPrimaryCategory from "./initializers/primary-category";
+import initEditorStore from "./metabox/editor-store";
 import createClassicEditorWatcher, { getEditorData } from "./watchers/classicEditorWatcher";
 
 domReady( async () => {
@@ -53,6 +54,8 @@ domReady( async () => {
 		},
 	} );
 
+	// Until ALL the components are carried over, the `@yoast/editor` store is still needed.
+	initEditorStore();
 
 	// TODO:
 	// - expose global API (pluggable/see scrapers).
