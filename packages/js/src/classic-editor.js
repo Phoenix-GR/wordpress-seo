@@ -1,12 +1,15 @@
+import { select } from "@wordpress/data";
 import domReady from "@wordpress/dom-ready";
 import createSeoIntegration, { createDefaultReplacementVariableConfigurations, SEO_STORE_NAME } from "@yoast/seo-integration";
 import { mapValues, pick } from "lodash";
+import { registerReactComponent, renderReactRoot } from "./helpers/reactRoot";
 import initAdmin from "./initializers/admin";
 import initAdminMedia from "./initializers/admin-media";
-import initClassicEditorIntegration from "./initializers/classic-editor-integration";
 import initTabs from "./initializers/metabox-tabs";
 import initPrimaryCategory from "./initializers/primary-category";
 import initEditorStore from "./metabox/editor-store";
+import Metabox from "./metabox/metabox";
+import { MetaboxFill, MetaboxSlot } from "./metabox/slot-fill";
 import createClassicEditorWatcher, { getEditorData } from "./watchers/classicEditorWatcher";
 
 domReady( async () => {
@@ -27,7 +30,7 @@ domReady( async () => {
 
 	const watcher = createClassicEditorWatcher( { storeName: SEO_STORE_NAME } );
 
-	const {} = await createSeoIntegration( {
+	const { SeoProvider } = await createSeoIntegration( {
 		analysisWorkerUrl: wpseoScriptData.analysis.worker.url,
 		analysisDependencies: pick( wpseoScriptData.analysis.worker.dependencies, [
 			"lodash",
@@ -69,5 +72,18 @@ domReady( async () => {
 	// Responsibility:
 	// - render metabox
 	// - provide slot/fill mechanism
-	initClassicEditorIntegration( {} );
+
+	renderReactRoot( {
+		target: "wpseo-metabox-root",
+		children: (
+			<SeoProvider>
+				<MetaboxSlot />
+				<MetaboxFill>
+					<Metabox settings={ select( "yoast-seo/editor" ).getPreferences() } />
+				</MetaboxFill>
+			</SeoProvider>
+		),
+		theme: { isRtl: Boolean( wpseoScriptData.metabox.isRtl ) },
+		location: "metabox",
+	} );
 } );
